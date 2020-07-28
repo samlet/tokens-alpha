@@ -1,7 +1,4 @@
 #!/usr/bin/python3
-"""
-$ brownie test ./tests/test_approve.py
-"""
 
 import pytest
 
