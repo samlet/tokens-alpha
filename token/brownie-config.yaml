@@ -7,5 +7,11 @@ reports:
 compiler:
     solc:
         remappings:
-          - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.0.0"
+          - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.1.0"
 
+networks:
+    development:
+        cmd_settings:
+            unlock:
+                - 0x2F1875bbcb92361dd5C6407F5ff4Fa8f945bfB48
+                - 0xbDAbfB8DaAAD562C2DF7E7B63DE422482AB1fB02
