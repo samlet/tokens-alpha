@@ -1,0 +1,4 @@
+compiler:
+    solc:
+        remappings:
+          - "openzeppelin-solidity=OpenZeppelin/openzeppelin-contracts@1.10.0"
