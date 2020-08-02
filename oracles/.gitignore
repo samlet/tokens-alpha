@@ -3,5 +3,3 @@ __pycache__
 .hypothesis/
 build/
 reports/
-node_modules/
-/.ipynb_checkpoints/
