@@ -1,3 +1,7 @@
+from typing import Text, Any, Dict, List, Union, Optional, Tuple
+
+import pandas as pd
+import json
 import streamlit as st
 
 # from interacts.common import display_lang_selector
@@ -7,6 +11,9 @@ from brownie import project, network, accounts
 
 enable_streamlit_tracker()
 write_styles()
+
+def to_df(list_of_tuples:List[Tuple], columns:List[Text]) -> pd.DataFrame:
+    return pd.DataFrame(list_of_tuples, columns=columns)
 
 def sidebar():
     # cur_lang=display_lang_selector()
@@ -49,7 +56,43 @@ def manage_token(proj, contract_name):
         f = contract.deploy({'from': accounts[0]})
         st.write(f)
     except ValueError as e:
-        st.markdown(f'**{contract_name}** is not a token.')
+        st.markdown(f"**{contract_name}** doesn't have a default constructor.")
+
+def show_source(proj, contract_name):
+    from streamlit_ace import st_ace
+    sources = proj._sources
+    src = sources.get(contract_name)
+    content = st_ace(
+        placeholder=st.sidebar.text_input("Editor placeholder.", value=''),
+        language='solidity',
+        theme='xcode',
+        keybinding="sublime",
+        font_size=st.sidebar.slider("Font size.", 5, 24, 12),
+        tab_size=st.sidebar.slider("Tab size.", 1, 8, 4),
+        show_gutter=True,
+        show_print_margin=True,
+        wrap=st.sidebar.checkbox("Wrap enabled.", value=False),
+        readonly=st.sidebar.checkbox("Read-only.", value=False, key="ace-editor"),
+        key="ace-editor"
+    )
+
+    # st.write(content)
+
+def inputs(f):
+    return ', '.join([p['name'] for p in f['inputs']])
+
+def show_abi(proj, contract_name):
+    build = proj._build
+    c = build.get(contract_name)
+    # abi=c['abi']
+    # st.write(abi)
+    df=to_df([(f['name'], f['type'],
+              f['stateMutability'] if 'stateMutability' in f else '_',
+              inputs(f),
+             )
+             for f in c['abi']], ['name', 'type', 'stateMutability', 'inputs'])
+    # st.dataframe(df)
+    st.table(df)
 
 def main():
     proj_name=sidebar()
@@ -63,6 +106,8 @@ def main():
         proj=next(p for p in loaded_projs if p._name==proj_name)
 
     contract_name=list_contracts(proj)
+    # show_source(proj, contract_name)
+    show_abi(proj, contract_name)
     manage_token(proj, contract_name)
 
 if __name__ == '__main__':
