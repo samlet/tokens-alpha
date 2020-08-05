@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma solidity >=0.4.22 <0.5.0;
 
 import "./OracleInterface.sol";
 import "../base/Ownable.sol";
