@@ -9,10 +9,10 @@ contract MappingExample {
     }
 }
 
-contract MappingUser {
-    function f() public returns (uint) {
+contract MappingTest {
+    function f() public returns (address, uint) {
         MappingExample m = new MappingExample();
         m.update(100);
-        return m.balances(address(this));
+        return (address(this), m.balances(address(this)));
     }
 }

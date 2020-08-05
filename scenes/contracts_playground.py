@@ -9,6 +9,8 @@ from interacts.sl_utils import all_labels, write_styles
 from interacts.tracker_streamlit import enable_streamlit_tracker
 from brownie import project, network, accounts
 
+from scenes.scene_states import contract_instances
+
 enable_streamlit_tracker()
 write_styles()
 
@@ -37,6 +39,8 @@ def reload(proj_name:str):
     btn_reload = st.sidebar.button("Reload Project")
     if btn_reload:
         st.sidebar.markdown(f"reload project -> **{proj_name}**.")
+        contract_instances.clear()
+
         proj=get_proj(proj_name)
         proj.close(False)
         proj.load()
@@ -50,13 +54,28 @@ def list_contracts(proj):
     st.markdown(f"contract: **{contract_name}**")
     return contract_name
 
-def manage_token(proj, contract_name):
-    contract=proj[contract_name]
+def get_contract(proj_name:str, contract_name:str):
+    cname=f"{proj_name}.{contract_name}"
+    if cname in contract_instances:
+        return contract_instances[cname]
     try:
+        proj=get_proj(proj_name)
+        contract = proj[contract_name]
         f = contract.deploy({'from': accounts[0]})
-        st.write(f)
+        contract_instances[cname]=f
+        return f
     except ValueError as e:
         st.markdown(f"**{contract_name}** doesn't have a default constructor.")
+        return None
+
+# def manage_token(proj, contract_name):
+#     contract=proj[contract_name]
+#     try:
+#         f = contract.deploy({'from': accounts[0]})
+#         st.write(f)
+#         return f
+#     except ValueError as e:
+#         st.markdown(f"**{contract_name}** doesn't have a default constructor.")
 
 def show_source(proj, contract_name):
     from streamlit_ace import st_ace
@@ -94,9 +113,32 @@ def show_abi(proj, contract_name):
     # st.dataframe(df)
     st.table(df)
 
+def input_widgets(prefix, inputs:List[Dict[Text, Text]]):
+    # 'inputs': [{'name': '_id', 'type': 'bytes32'},
+    #    {'name': 'result', 'type': 'string'}],
+    args=[]
+    for i, input in enumerate(inputs):
+        value = st.text_input(f"{input['name']} ({input['type']})", "", key=f"{prefix}_{i}")
+        args.append(value)
+    return args
+
+def show_functions(proj, contract_name, instance):
+    contract=proj[contract_name]
+    for func in contract.abi:
+        if func['type']=='function':
+            fname = f"{func['name']} ({len(func['inputs'])})"
+            args=input_widgets(fname,  func['inputs'])
+            if st.button(f"Invoke: {fname}"):
+                fn = getattr(instance, func['name'], None)
+                st.write(fn.call(*args))
+
+def print_info():
+    print(accounts)
+
 def main():
     proj_name=sidebar()
     st.subheader(f"Project ◇ {proj_name}")
+
     loaded_projs=project.get_loaded_projects()
     # print([p._name for p in loaded_projs])
     reload(proj_name)
@@ -105,10 +147,17 @@ def main():
     else:
         proj=next(p for p in loaded_projs if p._name==proj_name)
 
+    # print_info()
     contract_name=list_contracts(proj)
     # show_source(proj, contract_name)
     show_abi(proj, contract_name)
-    manage_token(proj, contract_name)
+    # inst=manage_token(proj, contract_name)
+    inst = get_contract(proj_name, contract_name)
+    if inst:
+        st.write(inst)
+        show_functions(proj, contract_name, inst)
+    else:
+        st.write('No instance.')
 
 if __name__ == '__main__':
     main()

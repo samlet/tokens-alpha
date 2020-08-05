@@ -69,5 +69,8 @@ contract Dice is UsingMyOracle {
     function checkResult() constant returns (string) {
         return dice_result[myids[msg.sender]];
     }
+    function getResult() constant returns (string) {
+        return dice_result[myids[msg.sender]];
+    }
 }
 
