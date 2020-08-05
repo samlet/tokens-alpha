@@ -123,6 +123,7 @@ def input_widgets(prefix, inputs:List[Dict[Text, Text]]):
     return args
 
 def show_functions(proj, contract_name, instance):
+    from brownie.network.transaction import TransactionReceipt
     contract=proj[contract_name]
     for func in contract.abi:
         if func['type']=='function':
@@ -130,7 +131,8 @@ def show_functions(proj, contract_name, instance):
             args=input_widgets(fname,  func['inputs'])
             if st.button(f"Invoke: {fname}"):
                 fn = getattr(instance, func['name'], None)
-                st.write(fn.call(*args))
+                tx=fn(*args)
+                st.write(tx.return_value if isinstance(tx, TransactionReceipt) else tx)
 
 def print_info():
     print(accounts)
