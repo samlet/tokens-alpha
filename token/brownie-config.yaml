@@ -1,17 +1,35 @@
 # exclude SafeMath when calculating test coverage
 # https://eth-brownie.readthedocs.io/en/v1.10.3/config.html#exclude_paths
 reports:
-  exclude_contracts:
-    - SafeMath
+    exclude_contracts:
+        - SafeMath
 
 compiler:
     solc:
         remappings:
-          - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.1.0"
+            - "@openzeppelin=OpenZeppelin/openzeppelin-contracts@3.1.0"
 
 networks:
+    default: development # the default network that brownie connects to
     development:
+        gas_limit: max
+        gas_price: 0
+        reverting_tx_gas_limit: max
+        default_contract_owner: true
+        cmd_settings:
+            # The unlocked accounts are automatically added to the Accounts container.
+            # Note that you might need to fund the unlocked accounts manually.
+            unlock:
+                - 0x2F1875bbcb92361dd5C6407F5ff4Fa8f945bfB48
+                - 0xbDAbfB8DaAAD562C2DF7E7B63DE422482AB1fB02
+                - 0x6Ac7cFDaFEfe8Bf03b612c7EC93b50a107d451F3
+    live:
+        gas_limit: auto
+        gas_price: auto
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
         cmd_settings:
             unlock:
                 - 0x2F1875bbcb92361dd5C6407F5ff4Fa8f945bfB48
                 - 0xbDAbfB8DaAAD562C2DF7E7B63DE422482AB1fB02
+
