@@ -23,13 +23,12 @@ networks:
                 - 0x2F1875bbcb92361dd5C6407F5ff4Fa8f945bfB48
                 - 0xbDAbfB8DaAAD562C2DF7E7B63DE422482AB1fB02
                 - 0x6Ac7cFDaFEfe8Bf03b612c7EC93b50a107d451F3
-    live:
+    rinkeby:
         gas_limit: auto
         gas_price: auto
         reverting_tx_gas_limit: false
         default_contract_owner: false
         cmd_settings:
-            unlock:
-                - 0x2F1875bbcb92361dd5C6407F5ff4Fa8f945bfB48
-                - 0xbDAbfB8DaAAD562C2DF7E7B63DE422482AB1fB02
+            # unlock:
+            #    - 0xC3d3D738E6cBF325C10Fe6F31de6AE4f49b2f396
 
