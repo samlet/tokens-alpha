@@ -14,6 +14,7 @@ contract WithdrawalContract {
 
     function becomeRichest() public payable returns (bool) {
         if (msg.value > mostSent) {
+            // 此处不直接转账，暂时记录应付款项
             pendingWithdrawals[richest] += msg.value;
             richest = msg.sender;
             mostSent = msg.value;
@@ -23,6 +24,7 @@ contract WithdrawalContract {
         }
     }
 
+    // 收款方调用这个函数，主动提取款项
     function withdraw() public {
         uint amount = pendingWithdrawals[msg.sender];
         // 记住，在发送资金之前将待发金额清零
@@ -31,3 +33,4 @@ contract WithdrawalContract {
         msg.sender.transfer(amount);
     }
 }
+
