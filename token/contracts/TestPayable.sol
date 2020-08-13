@@ -26,7 +26,7 @@ contract TestPayable {
     uint y;
 }
 
-contract Caller {
+contract TestCaller {
     function callTest(Test test) public returns (bool) {
         (bool success,) = address(test).call(abi.encodeWithSignature("nonExistingFunction()"));
         require(success);
